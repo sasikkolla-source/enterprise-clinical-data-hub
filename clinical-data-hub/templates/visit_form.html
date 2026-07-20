@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Log visit — {{ patient.full_name }}{% endblock %}
+{% block content %}
+
+<header class="page-header">
+  <div>
+    <span class="eyebrow">{{ patient.mrn }}</span>
+    <h1>Log a visit for {{ patient.full_name }}</h1>
+  </div>
+</header>
+
+<section class="panel form-panel">
+  <form method="POST" class="record-form">
+    <div class="form-row">
+      <label>
+        <span>Visit type</span>
+        <select name="visit_type">
+          {% for t in ['Outpatient', 'Inpatient', 'ER', 'Telehealth'] %}
+          <option value="{{ t }}">{{ t }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>
+        <span>Reason for visit</span>
+        <input type="text" name="reason" placeholder="e.g. Follow-up, chest pain">
+      </label>
+    </div>
+
+    <label class="full-width">
+      <span>Diagnosis</span>
+      <input type="text" name="diagnosis">
+    </label>
+
+    <div class="form-row form-row--vitals">
+      <label><span>Heart rate (bpm)</span><input type="number" name="heart_rate"></label>
+      <label><span>Systolic BP</span><input type="number" name="systolic_bp"></label>
+      <label><span>Diastolic BP</span><input type="number" name="diastolic_bp"></label>
+      <label><span>Temp (°C)</span><input type="number" step="0.1" name="temperature_c"></label>
+      <label><span>SpO₂ (%)</span><input type="number" name="spo2"></label>
+    </div>
+
+    <label class="full-width">
+      <span>Clinical notes</span>
+      <textarea name="notes" rows="4"></textarea>
+    </label>
+
+    <div class="form-actions">
+      <a href="{{ url_for('patient_detail', patient_id=patient.id) }}" class="btn btn-secondary">Cancel</a>
+      <button type="submit" class="btn btn-primary">Save visit</button>
+    </div>
+  </form>
+</section>
+
+{% endblock %}

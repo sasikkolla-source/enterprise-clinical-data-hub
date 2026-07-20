@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}New account — Clinical Data Hub{% endblock %}
+{% block content %}
+
+<header class="page-header">
+  <div>
+    <span class="eyebrow">Administration</span>
+    <h1>Create a staff account</h1>
+  </div>
+</header>
+
+<section class="panel form-panel">
+  <form method="POST" class="record-form">
+    <div class="form-row">
+      <label>
+        <span>Full name</span>
+        <input type="text" name="full_name" required>
+      </label>
+      <label>
+        <span>Username</span>
+        <input type="text" name="username" required>
+      </label>
+    </div>
+
+    <div class="form-row">
+      <label>
+        <span>Role</span>
+        <select name="role">
+          {% for r in roles %}
+          <option value="{{ r }}">{{ r|capitalize }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>
+        <span>Department</span>
+        <input type="text" name="department" value="General">
+      </label>
+    </div>
+
+    <label class="full-width">
+      <span>Temporary password</span>
+      <input type="text" name="password" placeholder="changeme123">
+    </label>
+
+    <div class="form-actions">
+      <a href="{{ url_for('users_list') }}" class="btn btn-secondary">Cancel</a>
+      <button type="submit" class="btn btn-primary">Create account</button>
+    </div>
+  </form>
+</section>
+
+{% endblock %}

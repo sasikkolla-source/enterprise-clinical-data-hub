@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Clinical Data Hub{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="{{ 'has-shell' if current_user else 'auth-page' }}">
+{% if current_user %}
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark">CDH</span>
+      <div class="brand-text">
+        <strong>Clinical Data Hub</strong>
+        <small>Enterprise Edition</small>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <span class="nav-label">Care</span>
+      <a href="{{ url_for('dashboard') }}" class="nav-link {{ 'active' if request.path == url_for('dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('patients_list') }}" class="nav-link {{ 'active' if request.path.startswith('/patients') }}">Patients</a>
+
+      {% if current_user.role == 'admin' %}
+      <span class="nav-label">Administration</span>
+      <a href="{{ url_for('users_list') }}" class="nav-link {{ 'active' if request.path.startswith('/users') }}">Staff Accounts</a>
+      <a href="{{ url_for('audit_log_view') }}" class="nav-link {{ 'active' if request.path.startswith('/audit-log') }}">Audit Log</a>
+      {% endif %}
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <span class="avatar">{{ current_user.initials }}</span>
+        <div class="user-meta">
+          <strong>{{ current_user.full_name }}</strong>
+          <small>{{ current_user.role|capitalize }} · {{ current_user.department }}</small>
+        </div>
+      </div>
+      <a href="{{ url_for('logout') }}" class="signout">Sign out</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="flash-stack">
+        {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% else %}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-stack flash-stack--auth">
+      {% for category, message in messages %}
+      <div class="flash flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  {% endwith %}
+  {% block auth_content %}{% endblock %}
+{% endif %}
+</body>
+</html>

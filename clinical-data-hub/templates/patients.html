@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Patients — Clinical Data Hub{% endblock %}
+{% block content %}
+
+<header class="page-header">
+  <div>
+    <span class="eyebrow">Records</span>
+    <h1>Patients</h1>
+  </div>
+  <a href="{{ url_for('patient_new') }}" class="btn btn-primary">+ Admit patient</a>
+</header>
+
+<form class="filter-bar" method="GET">
+  <input type="text" name="q" placeholder="Search by name or MRN…" value="{{ q }}">
+  <select name="status">
+    <option value="">All statuses</option>
+    <option value="Active" {{ 'selected' if status == 'Active' }}>Active</option>
+    <option value="Critical" {{ 'selected' if status == 'Critical' }}>Critical</option>
+    <option value="Discharged" {{ 'selected' if status == 'Discharged' }}>Discharged</option>
+  </select>
+  <button type="submit" class="btn btn-secondary">Filter</button>
+</form>
+
+<section class="panel">
+  {% if patients %}
+  <table class="data-table">
+    <thead><tr><th>MRN</th><th>Name</th><th>Age / Sex</th><th>Condition</th><th>Status</th><th>Admitted</th></tr></thead>
+    <tbody>
+      {% for p in patients %}
+      <tr>
+        <td class="mono"><span class="mrn-tag">{{ p.mrn }}</span></td>
+        <td><a href="{{ url_for('patient_detail', patient_id=p.id) }}">{{ p.full_name }}</a></td>
+        <td class="mono">{{ p.age }} / {{ p.sex }}</td>
+        <td>{{ p.primary_condition or '—' }}</td>
+        <td><span class="status status-{{ p.status|lower }}">{{ p.status }}</span></td>
+        <td class="mono muted">{{ p.admitted_at.strftime('%b %d, %Y') }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty-state">No patients match your search. Try a different name or MRN.</p>
+  {% endif %}
+</section>
+
+{% endblock %}

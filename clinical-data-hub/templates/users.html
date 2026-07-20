@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Staff Accounts — Clinical Data Hub{% endblock %}
+{% block content %}
+
+<header class="page-header">
+  <div>
+    <span class="eyebrow">Administration</span>
+    <h1>Staff accounts</h1>
+  </div>
+  <a href="{{ url_for('user_new') }}" class="btn btn-primary">+ New account</a>
+</header>
+
+<section class="panel">
+  <table class="data-table">
+    <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Department</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ u.full_name }}</td>
+        <td class="mono">{{ u.username }}</td>
+        <td><span class="tag">{{ u.role|capitalize }}</span></td>
+        <td>{{ u.department }}</td>
+        <td><span class="status status-{{ 'active' if u.is_active else 'discharged' }}">{{ 'Active' if u.is_active else 'Disabled' }}</span></td>
+        <td>
+          {% if u.id != current_user.id %}
+          <form method="POST" action="{{ url_for('user_toggle_active', user_id=u.id) }}">
+            <button type="submit" class="btn btn-tiny">{{ 'Disable' if u.is_active else 'Enable' }}</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+{% endblock %}

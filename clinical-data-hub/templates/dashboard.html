@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Clinical Data Hub{% endblock %}
+{% block content %}
+
+<header class="page-header">
+  <div>
+    <span class="eyebrow">Overview</span>
+    <h1>Good to see you, {{ current_user.full_name.split(' ')[0] }}.</h1>
+  </div>
+  <a href="{{ url_for('patient_new') }}" class="btn btn-primary">+ Admit patient</a>
+</header>
+
+<section class="stat-grid">
+  <div class="stat-card">
+    <span class="stat-label">Total patients</span>
+    <span class="stat-value">{{ total_patients }}</span>
+    <span class="stat-foot">on record</span>
+  </div>
+  <div class="stat-card stat-card--active">
+    <span class="stat-label">Active</span>
+    <span class="stat-value">{{ active_patients }}</span>
+    <span class="stat-foot">currently under care</span>
+  </div>
+  <div class="stat-card stat-card--critical">
+    <span class="stat-label">Critical</span>
+    <span class="stat-value">{{ critical_patients }}</span>
+    <span class="stat-foot">need priority review</span>
+  </div>
+</section>
+
+<section class="panel-grid">
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Recent visits</h2>
+      <span class="panel-count">{{ recent_visits|length }}</span>
+    </div>
+    {% if recent_visits %}
+    <table class="data-table">
+      <thead><tr><th>Patient</th><th>Type</th><th>Vitals</th><th>Clinician</th><th>Date</th></tr></thead>
+      <tbody>
+        {% for v in recent_visits %}
+        <tr>
+          <td><a href="{{ url_for('patient_detail', patient_id=v.patient_id) }}">{{ v.patient.full_name }}</a></td>
+          <td><span class="tag">{{ v.visit_type }}</span></td>
+          <td class="mono vitals-cell">
+            {% if v.heart_rate %}HR {{ v.heart_rate }}{% endif %}
+            {% if v.systolic_bp %} · BP {{ v.systolic_bp }}/{{ v.diastolic_bp }}{% endif %}
+            {% if v.spo2 %} · SpO₂ {{ v.spo2 }}%{% endif %}
+          </td>
+          <td>{{ v.clinician.full_name if v.clinician else '—' }}</td>
+          <td class="mono muted">{{ v.visit_date.strftime('%b %d, %Y') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty-state">No visits recorded yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Critical lab flags</h2>
+      <span class="panel-count panel-count--critical">{{ critical_labs|length }}</span>
+    </div>
+    {% if critical_labs %}
+    <ul class="flag-list">
+      {% for lab in critical_labs %}
+      <li>
+        <a href="{{ url_for('patient_detail', patient_id=lab.patient_id) }}">
+          <strong>{{ lab.patient.full_name }}</strong>
+          <span class="mono">{{ lab.test_name }}: {{ lab.result_value }} {{ lab.unit }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty-state">No critical flags right now.</p>
+    {% endif %}
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>Recently admitted</h2>
+    <a href="{{ url_for('patients_list') }}" class="panel-link">View all patients →</a>
+  </div>
+  <table class="data-table">
+    <thead><tr><th>MRN</th><th>Name</th><th>Age</th><th>Condition</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for p in recent_patients %}
+      <tr>
+        <td class="mono"><span class="mrn-tag">{{ p.mrn }}</span></td>
+        <td><a href="{{ url_for('patient_detail', patient_id=p.id) }}">{{ p.full_name }}</a></td>
+        <td class="mono">{{ p.age }}</td>
+        <td>{{ p.primary_condition or '—' }}</td>
+        <td><span class="status status-{{ p.status|lower }}">{{ p.status }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+{% endblock %}

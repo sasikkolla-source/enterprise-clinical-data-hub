@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Sign in — Clinical Data Hub{% endblock %}
+{% block auth_content %}
+<div class="auth-wrap">
+  <div class="auth-panel">
+    <div class="auth-signature" aria-hidden="true">
+      <svg viewBox="0 0 220 60" class="pulse-line">
+        <polyline points="0,30 40,30 52,10 64,50 78,30 96,30 108,18 118,42 130,30 220,30" />
+      </svg>
+    </div>
+    <span class="brand-mark brand-mark--lg">CDH</span>
+    <h1>Clinical Data Hub</h1>
+    <p class="auth-sub">Sign in with your staff credentials to access patient records.</p>
+
+    <form method="POST" class="auth-form">
+      <label>
+        <span>Username</span>
+        <input type="text" name="username" autocomplete="username" required autofocus>
+      </label>
+      <label>
+        <span>Password</span>
+        <input type="password" name="password" autocomplete="current-password" required>
+      </label>
+      <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+    </form>
+
+    <div class="auth-demo">
+      <span>Demo accounts</span>
+      <code>admin / admin123</code>
+      <code>doctor / doctor123</code>
+      <code>nurse / nurse123</code>
+    </div>
+  </div>
+</div>
+{% endblock %}

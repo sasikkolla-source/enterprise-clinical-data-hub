@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit patient' if patient else 'Admit patient' }} — Clinical Data Hub{% endblock %}
+{% block content %}
+
+<header class="page-header">
+  <div>
+    <span class="eyebrow">{{ 'Editing record' if patient else 'New record' }}</span>
+    <h1>{{ 'Edit ' + patient.full_name if patient else 'Admit a patient' }}</h1>
+  </div>
+</header>
+
+<section class="panel form-panel">
+  <form method="POST" class="record-form">
+    <div class="form-row">
+      <label>
+        <span>Medical Record Number</span>
+        <input type="text" name="mrn" value="{{ patient.mrn if patient else '' }}"
+               {{ 'readonly' if patient else '' }} required placeholder="MRN-10005">
+      </label>
+      <label>
+        <span>Status</span>
+        <select name="status">
+          {% for s in ['Active', 'Critical', 'Discharged'] %}
+          <option value="{{ s }}" {{ 'selected' if patient and patient.status == s }}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+
+    <div class="form-row">
+      <label>
+        <span>First name</span>
+        <input type="text" name="first_name" value="{{ patient.first_name if patient else '' }}" required>
+      </label>
+      <label>
+        <span>Last name</span>
+        <input type="text" name="last_name" value="{{ patient.last_name if patient else '' }}" required>
+      </label>
+    </div>
+
+    <div class="form-row">
+      <label>
+        <span>Date of birth</span>
+        <input type="date" name="date_of_birth" value="{{ patient.date_of_birth if patient else '' }}" required>
+      </label>
+      <label>
+        <span>Sex</span>
+        <select name="sex">
+          {% for s in ['F', 'M', 'U'] %}
+          <option value="{{ s }}" {{ 'selected' if patient and patient.sex == s }}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>
+        <span>Blood type</span>
+        <input type="text" name="blood_type" value="{{ patient.blood_type if patient else '' }}" placeholder="O+">
+      </label>
+    </div>
+
+    <div class="form-row">
+      <label>
+        <span>Phone</span>
+        <input type="text" name="phone" value="{{ patient.phone if patient else '' }}">
+      </label>
+      <label>
+        <span>Email</span>
+        <input type="email" name="email" value="{{ patient.email if patient else '' }}">
+      </label>
+    </div>
+
+    <label class="full-width">
+      <span>Address</span>
+      <input type="text" name="address" value="{{ patient.address if patient else '' }}">
+    </label>
+
+    <label class="full-width">
+      <span>Primary condition</span>
+      <input type="text" name="primary_condition" value="{{ patient.primary_condition if patient else '' }}">
+    </label>
+
+    <label class="full-width">
+      <span>Allergies</span>
+      <textarea name="allergies" rows="2">{{ patient.allergies if patient else '' }}</textarea>
+    </label>
+
+    <div class="form-actions">
+      <a href="{{ url_for('patients_list') }}" class="btn btn-secondary">Cancel</a>
+      <button type="submit" class="btn btn-primary">{{ 'Save changes' if patient else 'Admit patient' }}</button>
+    </div>
+  </form>
+</section>
+
+{% endblock %}

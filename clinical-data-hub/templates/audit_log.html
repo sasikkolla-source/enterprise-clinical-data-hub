@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Audit Log — Clinical Data Hub{% endblock %}
+{% block content %}
+
+<header class="page-header">
+  <div>
+    <span class="eyebrow">Administration</span>
+    <h1>Audit log</h1>
+    <p class="subtext">Every create, update, delete, and sign-in event across the system.</p>
+  </div>
+</header>
+
+<section class="panel">
+  <table class="data-table data-table--audit">
+    <thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>Entity</th><th>Detail</th><th>IP</th></tr></thead>
+    <tbody>
+      {% for e in entries %}
+      <tr>
+        <td class="mono muted">{{ e.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        <td>{{ e.user.full_name if e.user else 'Unknown' }}</td>
+        <td><span class="tag tag-action-{{ e.action|lower }}">{{ e.action }}</span></td>
+        <td>{{ e.entity }}</td>
+        <td>{{ e.detail }}</td>
+        <td class="mono muted">{{ e.ip_address or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Error {{ code }} — Clinical Data Hub{% endblock %}
+{% block content %}
+<div class="error-state">
+  <span class="error-code">{{ code }}</span>
+  <p>{{ message }}</p>
+  <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Back to dashboard</a>
+</div>
+{% endblock %}
+{% block auth_content %}
+<div class="auth-wrap">
+  <div class="auth-panel error-state">
+    <span class="error-code">{{ code }}</span>
+    <p>{{ message }}</p>
+    <a href="{{ url_for('login') }}" class="btn btn-primary">Back to sign in</a>
+  </div>
+</div>
+{% endblock %}

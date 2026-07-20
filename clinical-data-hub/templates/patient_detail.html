@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}{{ patient.full_name }} — Clinical Data Hub{% endblock %}
+{% block content %}
+
+<header class="page-header">
+  <div>
+    <span class="eyebrow"><span class="mrn-tag">{{ patient.mrn }}</span></span>
+    <h1>{{ patient.full_name }}</h1>
+    <p class="subtext">{{ patient.age }} years old · {{ patient.sex }} · Blood type {{ patient.blood_type or '—' }}</p>
+  </div>
+  <div class="header-actions">
+    <span class="status status-{{ patient.status|lower }} status-lg">{{ patient.status }}</span>
+    <a href="{{ url_for('patient_edit', patient_id=patient.id) }}" class="btn btn-secondary">Edit</a>
+    {% if current_user.role == 'admin' %}
+    <form method="POST" action="{{ url_for('patient_delete', patient_id=patient.id) }}"
+          onsubmit="return confirm('Permanently delete {{ patient.full_name }}? This cannot be undone.');">
+      <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
+    {% endif %}
+  </div>
+</header>
+
+<section class="panel-grid panel-grid--info">
+  <div class="panel info-panel">
+    <div class="panel-head"><h2>Contact</h2></div>
+    <dl class="info-list">
+      <dt>Phone</dt><dd>{{ patient.phone or '—' }}</dd>
+      <dt>Email</dt><dd>{{ patient.email or '—' }}</dd>
+      <dt>Address</dt><dd>{{ patient.address or '—' }}</dd>
+    </dl>
+  </div>
+  <div class="panel info-panel">
+    <div class="panel-head"><h2>Clinical summary</h2></div>
+    <dl class="info-list">
+      <dt>Primary condition</dt><dd>{{ patient.primary_condition or '—' }}</dd>
+      <dt>Allergies</dt><dd>{{ patient.allergies or 'None recorded' }}</dd>
+      <dt>Admitted</dt><dd class="mono">{{ patient.admitted_at.strftime('%b %d, %Y %H:%M') }}</dd>
+      <dt>Record owner</dt><dd>{{ patient.created_by.full_name if patient.created_by else '—' }}</dd>
+    </dl>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>Visit history</h2>
+    <a href="{{ url_for('visit_new', patient_id=patient.id) }}" class="panel-link">+ Log visit</a>
+  </div>
+  {% if patient.visits %}
+  <table class="data-table">
+    <thead><tr><th>Date</th><th>Type</th><th>Reason</th><th>Diagnosis</th><th>Vitals</th><th>Clinician</th></tr></thead>
+    <tbody>
+      {% for v in patient.visits %}
+      <tr>
+        <td class="mono muted">{{ v.visit_date.strftime('%b %d, %Y') }}</td>
+        <td><span class="tag">{{ v.visit_type }}</span></td>
+        <td>{{ v.reason or '—' }}</td>
+        <td>{{ v.diagnosis or '—' }}</td>
+        <td class="mono vitals-cell">
+          {% if v.heart_rate %}HR {{ v.heart_rate }}{% endif %}
+          {% if v.systolic_bp %} · BP {{ v.systolic_bp }}/{{ v.diastolic_bp }}{% endif %}
+          {% if v.temperature_c %} · {{ v.temperature_c }}°C{% endif %}
+          {% if v.spo2 %} · SpO₂ {{ v.spo2 }}%{% endif %}
+        </td>
+        <td>{{ v.clinician.full_name if v.clinician else '—' }}</td>
+      </tr>
+      {% if v.notes %}
+      <tr class="notes-row"><td colspan="6"><em>{{ v.notes }}</em></td></tr>
+      {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty-state">No visits logged yet.</p>
+  {% endif %}
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>Lab results</h2>
+    <a href="{{ url_for('lab_new', patient_id=patient.id) }}" class="panel-link">+ Add result</a>
+  </div>
+  {% if patient.lab_results %}
+  <table class="data-table">
+    <thead><tr><th>Test</th><th>Result</th><th>Reference range</th><th>Flag</th><th>Collected</th><th>Ordered by</th></tr></thead>
+    <tbody>
+      {% for lab in patient.lab_results %}
+      <tr>
+        <td>{{ lab.test_name }}</td>
+        <td class="mono">{{ lab.result_value }} {{ lab.unit }}</td>
+        <td class="mono muted">{{ lab.reference_range or '—' }}</td>
+        <td><span class="flag flag-{{ lab.flag|lower }}">{{ lab.flag }}</span></td>
+        <td class="mono muted">{{ lab.collected_at.strftime('%b %d, %Y') }}</td>
+        <td>{{ lab.ordered_by.full_name if lab.ordered_by else '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty-state">No lab results recorded yet.</p>
+  {% endif %}
+</section>
+
+{% endblock %}
